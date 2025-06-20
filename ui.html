@@ -506,8 +506,9 @@
         <label>Paste Card Definitions</label>
         <textarea id="import-text" placeholder="Paste your card definitions here (YAML or JSON format)"
           style="height: 150px;"></textarea>
-        <div class="help-text">Supports YAML or JSON format. One or more cards. 
-          <a href="https://github.com/GoPrelude/figjam-planning-card-creator/tree/main/examples" target="_blank" style="color: #007AFF;">View templates →</a>
+        <div class="help-text">Supports YAML or JSON format. One or more cards.
+          <a href="https://github.com/GoPrelude/figjam-planning-card-creator/tree/main/examples" target="_blank"
+            style="color: #007AFF;">View templates →</a>
         </div>
       </div>
 
@@ -846,7 +847,58 @@ Status: Open`
         // Try JSON first
         if (text.startsWith('[') || text.startsWith('{')) {
           const parsed = JSON.parse(text);
-          importedCards = Array.isArray(parsed) ? parsed : [parsed];
+          const jsonCards = Array.isArray(parsed) ? parsed : [parsed];
+
+          // Convert JSON cards to standard format if needed
+          importedCards = jsonCards.map(card => {
+            // If card already has content field, use as-is
+            if (card.content) {
+              return card;
+            }
+
+            // Otherwise, build content from structured fields
+            let content = card.title + '\n\n';
+
+            if (card.objective) {
+              content += `Objective: ${card.objective}\n\n`;
+            }
+
+            if (card.dependencies) {
+              content += `Dependency:\n`;
+              const deps = Array.isArray(card.dependencies) ? card.dependencies : [card.dependencies];
+              deps.forEach(dep => {
+                if (dep && dep.toString().trim()) {
+                  content += `${dep.toString().trim()}\n`;
+                }
+              });
+              content += '\n';
+            }
+
+            if (card.requirements) {
+              content += `Requirements:\n`;
+              const reqs = Array.isArray(card.requirements) ? card.requirements : [card.requirements];
+              reqs.forEach(req => {
+                if (req && req.toString().trim()) {
+                  content += `${req.toString().trim()}\n`;
+                }
+              });
+              content += '\n';
+            }
+
+            if (card.lift) {
+              content += `Lift (Days) = ${card.lift}\n\n`;
+            }
+
+            if (card.start_date) {
+              content += `Start Date = ${card.start_date}\n`;
+              content += `End Date = ${card.end_date || ''}`;
+            }
+
+            return {
+              title: card.title,
+              content: content.trim()
+            };
+          });
         } else {
           // Try YAML-like format
           importedCards = parseYAML(text);
