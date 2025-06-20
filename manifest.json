@@ -9,6 +9,5 @@
 		"figjam"
 	],
 	"ui": "ui.html",
-	"description": "Create structured cards in FigJam with templates for features, bugs, and custom content. Import cards from YAML/JSON or use built-in templates.",
 	"documentationUrl": "https://github.com/GoPrelude/figjam-planning-card-creator"
 }
