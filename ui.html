@@ -102,9 +102,11 @@
       font-size: 13px;
       margin-bottom: 16px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 8px;
       transition: all 0.2s ease;
+      min-height: 40px;
+      line-height: 1.4;
     }
 
     .status.selected {
@@ -564,6 +566,8 @@
         document.getElementById('status-import').classList.add('selected');
         updatePlacementOptions();
         updateAddButton();
+        // Resize to accommodate multi-line selection names
+        setTimeout(resizePlugin, 10);
       } else if (msg.type === 'no-selection') {
         selectedSection = null;
         isSelectedSection = false;
@@ -577,6 +581,8 @@
         document.getElementById('status-import').classList.remove('selected');
         updatePlacementOptions();
         updateAddButton();
+        // Resize back to normal
+        setTimeout(resizePlugin, 10);
       }
     };
 
@@ -689,7 +695,7 @@ Status: Open`
       const tabs = document.querySelector('.tabs');
       const tabsHeight = tabs ? tabs.offsetHeight : 0;
       const activeTabHeight = activeTab.offsetHeight;
-      const padding = 25; // Buffer for margins and spacing
+      const padding = 50; // Increased buffer for multi-line selection names
 
       const contentHeight = tabsHeight + activeTabHeight + padding;
       const newHeight = contentHeight;
@@ -811,7 +817,7 @@ Status: Open`
             cardContent += '\n';
           }
 
-          if (card.lift) {
+          if (card.lift && card.lift !== "0" && card.lift !== 0) {
             cardContent += `Lift (Days) = ${card.lift}\n\n`;
           }
 
@@ -844,8 +850,9 @@ Status: Open`
       }
 
       try {
-        // Try JSON first
-        if (text.startsWith('[') || text.startsWith('{')) {
+        // Try JSON first - trim whitespace for detection
+        const trimmedText = text.trim();
+        if (trimmedText.startsWith('[') || trimmedText.startsWith('{')) {
           const parsed = JSON.parse(text);
           const jsonCards = Array.isArray(parsed) ? parsed : [parsed];
 
@@ -885,8 +892,14 @@ Status: Open`
               content += '\n';
             }
 
-            if (card.lift) {
-              content += `Lift (Days) = ${card.lift}\n\n`;
+            // Parse lift as number if it's a string
+            let liftValue = card.lift;
+            if (typeof liftValue === 'string' && liftValue.trim() !== '') {
+              liftValue = parseFloat(liftValue);
+            }
+
+            if (liftValue && liftValue !== 0 && !isNaN(liftValue)) {
+              content += `Lift (Days) = ${liftValue}\n\n`;
             }
 
             if (card.start_date) {
@@ -907,6 +920,9 @@ Status: Open`
         if (importedCards.length === 0) {
           throw new Error('No valid cards found');
         }
+
+        // Debug: Check what we parsed
+        console.log('Imported cards:', importedCards);
 
         // Just update the button
         updateAddButton();
@@ -1013,12 +1029,10 @@ Status: Open`
         if (importBtn) importBtn.disabled = true;
         if (templateBtn) templateBtn.disabled = true;
         if (customBtn) customBtn.disabled = true;
-      } else if (currentTab === 'import') {
+      } else {
+        // Update all buttons based on their specific conditions
         if (importBtn) importBtn.disabled = importedCards.length === 0;
-      } else if (currentTab === 'templates') {
         if (templateBtn) templateBtn.disabled = !selectedTemplate;
-      } else if (currentTab === 'custom') {
-        // Enable custom button when section is selected
         if (customBtn) customBtn.disabled = false;
       }
     }
@@ -1111,28 +1125,17 @@ Status: Open`
     }
 
 
-    const globalAddBtn = document.getElementById('add-cards');
-    if (globalAddBtn) {
-      globalAddBtn.onclick = () => {
+    // Initialize event handlers
+
+    // Set up import button handler
+    const importBtn = document.getElementById('add-import-cards');
+    if (importBtn) {
+      importBtn.onclick = () => {
         const placement = document.querySelector('input[name="placement"]:checked').value;
-        let cards = [];
-
-        if (currentTab === 'import') {
-          cards = importedCards;
-        } else if (currentTab === 'templates') {
-          // Check built-in templates first
-          if (builtInTemplates[selectedTemplate]) {
-            cards = builtInTemplates[selectedTemplate].cards;
-          } else if (savedTemplates[selectedTemplate]) {
-            cards = savedTemplates[selectedTemplate].cards;
-          }
-        } else {
-          cards = customCards;
-        }
-
+        let cards = importedCards;
 
         if (cards.length === 0) {
-          alert('No cards to add. Please create or import cards first.');
+          alert('No cards to add. Please import cards first.');
           return;
         }
 
@@ -1145,101 +1148,78 @@ Status: Open`
           }
         }, '*');
       };
+    }
 
-      // Set up button handlers with existence checks
-      const importBtn = document.getElementById('add-import-cards');
-      if (importBtn) {
-        importBtn.onclick = () => {
-          const placement = document.querySelector('input[name="placement"]:checked').value;
-          let cards = importedCards;
+    const cancelImportBtn = document.getElementById('cancel-import');
+    if (cancelImportBtn) {
+      cancelImportBtn.onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+      };
+    }
 
-          if (cards.length === 0) {
-            alert('No cards to add. Please import cards first.');
-            return;
+    const templateBtn = document.getElementById('add-template-card');
+    if (templateBtn) {
+      templateBtn.onclick = () => {
+        const placement = document.querySelector('input[name="template-placement"]:checked').value;
+        let cards = [];
+
+        // Check built-in templates first
+        if (builtInTemplates[selectedTemplate]) {
+          cards = builtInTemplates[selectedTemplate].cards;
+        } else if (savedTemplates[selectedTemplate]) {
+          cards = savedTemplates[selectedTemplate].cards;
+        }
+
+        if (cards.length === 0) {
+          alert('No template selected');
+          return;
+        }
+
+        // Send message to add cards
+        parent.postMessage({
+          pluginMessage: {
+            type: 'add-cards',
+            placement: placement,
+            cards: cards
           }
+        }, '*');
+      };
+    }
 
-          // Send message to add cards
-          parent.postMessage({
-            pluginMessage: {
-              type: 'add-cards',
-              placement: placement,
-              cards: cards
-            }
-          }, '*');
-        };
-      }
+    const cancelTemplateBtn = document.getElementById('cancel-template');
+    if (cancelTemplateBtn) {
+      cancelTemplateBtn.onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+      };
+    }
 
-      const cancelImportBtn = document.getElementById('cancel-import');
-      if (cancelImportBtn) {
-        cancelImportBtn.onclick = () => {
-          parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
-        };
-      }
+    const cancelCustomBtn = document.getElementById('cancel-custom');
+    if (cancelCustomBtn) {
+      cancelCustomBtn.onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+      };
+    }
 
-      const templateBtn = document.getElementById('add-template-card');
-      if (templateBtn) {
-        templateBtn.onclick = () => {
-          const placement = document.querySelector('input[name="template-placement"]:checked').value;
-          let cards = [];
+    // Initialize
+    updateTemplateList();
 
-          // Check built-in templates first
-          if (builtInTemplates[selectedTemplate]) {
-            cards = builtInTemplates[selectedTemplate].cards;
-          } else if (savedTemplates[selectedTemplate]) {
-            cards = savedTemplates[selectedTemplate].cards;
-          }
+    // Add event listener for auto-parsing import text
+    document.getElementById('import-text').addEventListener('input', autoParseImport);
 
-          if (cards.length === 0) {
-            alert('No template selected');
-            return;
-          }
+    // Wait a bit for UI to fully render, then resize once
+    setTimeout(() => {
+      resizePlugin();
+    }, 200);
 
-          // Send message to add cards
-          parent.postMessage({
-            pluginMessage: {
-              type: 'add-cards',
-              placement: placement,
-              cards: cards
-            }
-          }, '*');
-        };
-      }
+    // Check selection on load
+    setTimeout(() => {
+      parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
+    }, 100);
 
-      const cancelTemplateBtn = document.getElementById('cancel-template');
-      if (cancelTemplateBtn) {
-        cancelTemplateBtn.onclick = () => {
-          parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
-        };
-      }
-
-      const cancelCustomBtn = document.getElementById('cancel-custom');
-      if (cancelCustomBtn) {
-        cancelCustomBtn.onclick = () => {
-          parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
-        };
-      }
-
-      // Initialize
-      updateTemplateList();
-
-      // Add event listener for auto-parsing import text
-      document.getElementById('import-text').addEventListener('input', autoParseImport);
-
-      // Wait a bit for UI to fully render, then resize once
-      setTimeout(() => {
-        resizePlugin();
-      }, 200);
-
-      // Check selection on load
-      setTimeout(() => {
-        parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
-      }, 100);
-
-      // Check selection periodically
-      setInterval(() => {
-        parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
-      }, 500);
-    };
+    // Check selection periodically
+    setInterval(() => {
+      parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
+    }, 500);
   </script>
 </body>
 

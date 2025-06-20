@@ -1,33 +1,31 @@
-title: 
-objective: 
+title: title
+objective: objective
 dependencies:
-  - 
+  - item (replace or delete)
 requirements:
-  - 
-lift: 
-start_date: 
-end_date: 
+  - item 1 (replace or delete)
+lift: 0
+start_date: 2025-01-01
+end_date: 2025-12-31
 
 ---
-
-title: 
-objective: 
+title: title
+objective: objective
 dependencies:
-  - 
+  - item (replace or delete)
 requirements:
-  - 
-lift: 
-start_date: 
-end_date: 
+  - item 1 (replace or delete)
+lift: 0
+start_date: 2025-01-01
+end_date: 2025-12-31
 
 ---
-
-title: 
-objective: 
+title: title
+objective: objective
 dependencies:
-  - 
+  - item (replace or delete)
 requirements:
-  - 
-lift: 
-start_date: 
-end_date: 
+  - item 1 (replace or delete)
+lift: 0
+start_date: 2025-01-01
+end_date: 2025-12-31

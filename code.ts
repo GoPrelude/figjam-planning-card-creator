@@ -125,13 +125,31 @@ figma.ui.onmessage = async (msg) => {
     const selection = figma.currentPage.selection;
     if (selection.length === 1) {
       // Accept only sections and stickies
-      const nodeType = selection[0].type;
+      const firstSelected = selection[0];
+      const nodeType = firstSelected.type;
       if (nodeType === "SECTION" || nodeType === "STICKY") {
-        selectedSection = selection[0];
-        const isSection = selection[0].type === "SECTION";
+        selectedSection = firstSelected;
+        const isSection = firstSelected.type === "SECTION";
+
+        // Handle display name for different node types
+        let displayName = firstSelected.name || firstSelected.type;
+        if (firstSelected.type === "STICKY") {
+          // For sticky notes, get the text content and use just the first line
+          const stickyNode = firstSelected as StickyNode;
+          if (stickyNode.text && stickyNode.text.characters) {
+            const firstLine = stickyNode.text.characters.split("\n")[0].trim();
+            displayName = `${firstLine} (Sticky Note)`;
+          } else if (firstSelected.name) {
+            const firstLine = firstSelected.name.split("\n")[0].trim();
+            displayName = `${firstLine} (Sticky Note)`;
+          } else {
+            displayName = "Sticky Note";
+          }
+        }
+
         figma.ui.postMessage({
           type: "selection-found",
-          sectionName: selection[0].name || selection[0].type,
+          sectionName: displayName,
           isSection: isSection,
         });
       } else {
@@ -159,10 +177,25 @@ figma.ui.onmessage = async (msg) => {
       const targetSection = selectedSection;
       const placement = msg.placement || "inside";
 
+      // Get display name for notification
+      let notificationName = targetSection.name || targetSection.type;
+      if (targetSection.type === "STICKY") {
+        const stickyNode = targetSection as StickyNode;
+        if (stickyNode.text && stickyNode.text.characters) {
+          const firstLine = stickyNode.text.characters.split("\n")[0].trim();
+          notificationName = firstLine || "Sticky Note";
+        } else if (targetSection.name) {
+          const firstLine = targetSection.name.split("\n")[0].trim();
+          notificationName = firstLine || "Sticky Note";
+        } else {
+          notificationName = "Sticky Note";
+        }
+      }
+
       figma.notify(
-        `Adding cards ${placement === "below" ? "below" : "to"} ${
-          targetSection.name
-        }...`
+        `Adding cards ${
+          placement === "below" ? "below" : "to"
+        } ${notificationName}...`
       );
 
       // Get starting position

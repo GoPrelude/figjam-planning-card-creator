@@ -8,7 +8,7 @@
     "requirements": [
       ""
     ],
-    "lift": "",
+    "lift": 0,
     "start_date": "",
     "end_date": ""
   },
@@ -21,7 +21,7 @@
     "requirements": [
       ""
     ],
-    "lift": "",
+    "lift": 0,
     "start_date": "",
     "end_date": ""
   },
@@ -34,7 +34,7 @@
     "requirements": [
       ""
     ],
-    "lift": "",
+    "lift": 0,
     "start_date": "",
     "end_date": ""
   }
