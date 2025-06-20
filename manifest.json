@@ -1,6 +1,6 @@
 {
 	"name": "FigJam Planning Card Creator",
-	"id": "figjam-planning-card-creator",
+	"id": "1517980385972531983",
 	"api": "1.0.0",
 	"main": "code.js",
 	"capabilities": [],
@@ -8,5 +8,11 @@
 	"editorType": [
 		"figjam"
 	],
-	"ui": "ui.html"
+	"ui": "ui.html",
+	"networkAccess": {
+		"allowedDomains": [
+			"none"
+		]
+	},
+	"documentAccess": "dynamic-page"
 }

@@ -20,6 +20,7 @@ The plugin supports importing cards in both YAML and JSON formats:
 
 - **YAML Format**: [examples/cards.yaml](examples/cards.yaml)
 - **JSON Format**: [examples/cards.json](examples/cards.json)
+- **Import Guide**: [examples/README.md](examples/README.md) - Templates and instructions
 
 ## How to Install
 
@@ -31,13 +32,16 @@ The plugin supports importing cards in both YAML and JSON formats:
 ## How to Use
 
 1. Open your FigJam board
-2. **Select any section** (like "Backlog (Next 3 Months): Owner = Kris")
-3. Right-click on the canvas → Plugins → Development → Add Prelude Cards to Backlog
-4. Choose placement option:
-   - **Inside selected section**: Adds cards as children of the section
-   - **Below current selection**: Adds cards below the section on the main canvas
-5. Click "Add Cards" in the plugin dialog
-6. The 3 cards will be added based on your placement choice
+2. Select a section or sticky note where you want to add cards
+3. Run the plugin: Plugins → FigJam Planning Card Creator
+4. Choose from three options:
+   - **Templates**: Use built-in templates for common card types
+   - **Add Card**: Create a custom card with your own fields
+   - **Import Cards**: Paste YAML or JSON to add multiple cards at once
+5. Select placement:
+   - **Inside selected section**: Adds cards as children (sections only)
+   - **Below current selection**: Adds cards below your selection
+6. Click "Add Card" or "Add Cards" to create your planning cards
 
 ## Additional Capabilities
 
