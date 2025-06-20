@@ -1,0 +1,36 @@
+{
+	"name": "figjam-planning-card-creator",
+	"version": "1.0.0",
+	"description": "Create structured cards in FigJam with templates for features, bugs, and custom content",
+	"author": "GoPrelude",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/GoPrelude/figjam-planning-card-creator.git"
+	},
+	"homepage": "https://github.com/GoPrelude/figjam-planning-card-creator",
+	"bugs": {
+		"url": "https://github.com/GoPrelude/figjam-planning-card-creator/issues"
+	},
+	"keywords": [
+		"figma",
+		"figjam",
+		"plugin",
+		"cards",
+		"planning",
+		"templates",
+		"yaml"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"watch": "tsc -p tsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@figma/eslint-plugin-figma-plugins": "^0.16.1",
+		"@figma/plugin-typings": "^1.114.0",
+		"@typescript-eslint/eslint-plugin": "^8.34.1",
+		"@typescript-eslint/parser": "^8.34.1",
+		"eslint": "^8.57.1",
+		"typescript": "^4.9.5"
+	}
+}

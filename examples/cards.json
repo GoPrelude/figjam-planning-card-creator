@@ -1,0 +1,27 @@
+[
+  {
+    "title": "User Authentication System",
+    "objective": "Implement secure login and registration functionality",
+    "dependencies": [
+      "Database setup",
+      "Security review",
+      "API design"
+    ],
+    "requirements": [
+      "SSL certificates",
+      "User testing group"
+    ],
+    "lift": "2.5",
+    "start_date": "6/24/2024",
+    "end_date": "7/1/2024"
+  },
+  {
+    "title": "Mobile App Performance",
+    "objective": "Optimize app loading speed and responsiveness",
+    "requirements": [
+      "Performance testing tools",
+      "Device testing lab"
+    ],
+    "lift": "3"
+  }
+]

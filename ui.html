@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .main-content {
+      padding: 0 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e0e0e0;
+      background: #f8f9fa;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      background: #f8f9fa;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .tab.active {
+      color: #0d99ff;
+      background: #e3f2fd;
+      border: 1px solid #0d99ff;
+      border-bottom: 3px solid #0d99ff;
+      font-weight: 600;
+    }
+
+    .tab:hover:not(.active) {
+      color: #0d99ff;
+      background: #ffffff;
+    }
+
+    .tab:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 25%;
+      height: 50%;
+      width: 1px;
+      background: #e0e0e0;
+    }
+
+    .tab.active+.tab::after,
+    .tab.active::after {
+      display: none;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    #import-tab.active {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .status {
+      background: #f5f5f5;
+      color: #666;
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .status.selected {
+      background: #e3f2fd;
+      color: #1976d2;
+      border-color: #90caf9;
+    }
+
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+      border-color: #ef9a9a;
+    }
+
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-color: #a5d6a7;
+    }
+
+    .placement-section {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: auto;
+      margin-bottom: 0;
+    }
+
+    .placement-section .status {
+      margin-bottom: 12px;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .placement-options {
+      margin-bottom: 16px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .radio-option:last-child {
+      margin-bottom: 0;
+    }
+
+    .radio-option input {
+      margin-right: 8px;
+    }
+
+    .template-list {
+      margin-bottom: 20px;
+    }
+
+    .template-item {
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .template-item:hover {
+      background: #f5f5f5;
+      border-color: #0d99ff;
+    }
+
+    .template-item.selected {
+      background: #e3f2fd;
+      border-color: #0d99ff;
+    }
+
+    .delete-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 4px 8px;
+      font-size: 12px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    .template-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .template-description {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .custom-card-form {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .card-preview {
+      background: #fffbdd;
+      border: 1px solid #f0e68c;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .add-card-btn {
+      width: 100%;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      background: #f0f0f0;
+      color: #333;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .add-card-btn:hover {
+      background: #e0e0e0;
+    }
+
+    .cards-list {
+      margin-bottom: 16px;
+    }
+
+    .card-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .card-item button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 0;
+    }
+
+    .placement-section .buttons {
+      margin-top: 0;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .primary {
+      background: #0d99ff;
+      color: white;
+    }
+
+    .primary:hover:not(:disabled) {
+      background: #0c88e8;
+    }
+
+    .primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .imported-cards {
+      margin-top: 16px;
+    }
+
+    .imported-card {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .imported-card-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .imported-card-preview {
+      font-size: 12px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .import-error {
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('templates')">Templates</button>
+    <button class="tab" onclick="switchTab('custom')">Add Card</button>
+    <button class="tab" onclick="switchTab('import')">Import Cards</button>
+  </div>
+
+  <div class="main-content">
+    <div id="templates-tab" class="tab-content active">
+      <div class="template-list" id="template-list">
+        <div class="template-item selected" data-template="feature">
+          <div class="template-title">Feature Card</div>
+          <div class="template-description">Standard feature template</div>
+        </div>
+        <div class="template-item" data-template="bug">
+          <div class="template-title">Bug Report</div>
+          <div class="template-description">Track bugs and issues</div>
+        </div>
+      </div>
+
+      <div class="placement-section">
+        <div class="status" id="status">
+          <div class="status-message" id="status-message">
+            Select a single section or sticky to add cards
+          </div>
+        </div>
+
+        <div class="placement-options">
+          <label class="radio-option">
+            <input type="radio" name="template-placement" value="below" checked>
+            <span>Below current selection</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="template-placement" value="inside">
+            <span>Inside selected section</span>
+          </label>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="add-template-card" disabled>Add Card</button>
+          <button class="secondary" id="cancel-template">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="custom-tab" class="tab-content">
+      <div class="custom-card-form">
+        <div class="form-group">
+          <label>Card Title</label>
+          <input type="text" id="card-title" placeholder="e.g., Implement New Feature">
+        </div>
+
+        <div class="form-group">
+          <label>Objective</label>
+          <textarea id="card-objective" placeholder="Describe what this card aims to achieve"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Lift (Days) (optional)</label>
+            <input type="text" id="card-lift" placeholder="e.g., 2.5">
+          </div>
+
+          <div class="form-group">
+            <label>Start Date (optional)</label>
+            <input type="text" id="card-start" placeholder="e.g., 6/24/2024">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dependencies (optional)</label>
+          <textarea id="card-deps" placeholder="List any dependencies, one per line"></textarea>
+          <div class="help-text">Press Enter between each dependency</div>
+        </div>
+
+        <div class="form-group">
+          <label>Requirements (optional)</label>
+          <textarea id="card-requirements" placeholder="List any requirements, one per line"></textarea>
+          <div class="help-text">Press Enter between each requirement</div>
+        </div>
+
+        <div class="placement-section">
+          <div class="status" id="status-custom">
+            <div class="status-message" id="status-message-custom">
+              Select a single section or sticky to add cards
+            </div>
+          </div>
+
+          <div class="placement-options">
+            <label class="radio-option">
+              <input type="radio" name="custom-placement" value="below" checked>
+              <span>Below current selection</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="custom-placement" value="inside">
+              <span>Inside selected section</span>
+            </label>
+          </div>
+
+          <div class="buttons">
+            <button class="primary" onclick="addCustomCard()" id="add-custom-card" disabled>Add Card</button>
+            <button class="secondary" id="cancel-custom">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="import-tab" class="tab-content">
+      <div class="form-group">
+        <label>Paste Card Definitions</label>
+        <textarea id="import-text" placeholder="Paste your card definitions here (YAML or JSON format)"
+          style="height: 150px;"></textarea>
+        <div class="help-text">Supports YAML or JSON format. One or more cards.</div>
+      </div>
+
+      <div class="placement-section">
+        <div class="status" id="status-import">
+          <div class="status-message" id="status-message-import">
+            Select a single section or sticky to add cards
+          </div>
+        </div>
+
+        <div class="placement-options">
+          <label class="radio-option">
+            <input type="radio" name="placement" value="below" checked>
+            <span>Below current selection</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="placement" value="inside">
+            <span>Inside selected section</span>
+          </label>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="add-import-cards" disabled>Add Cards</button>
+          <button class="secondary" id="cancel-import">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedSection = null;
+    let isSelectedSection = false;
+    let customCards = [];
+    let importedCards = [];
+    let currentTab = 'templates';
+    let savedTemplates = {}; // Removed localStorage due to Figma sandbox restrictions
+    let selectedTemplate = 'feature';
+
+    // Handle messages from the plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+      if (msg.type === 'selection-found') {
+        selectedSection = msg.sectionName;
+        isSelectedSection = msg.isSection;
+        // Update all status messages
+        document.getElementById('status-message').textContent = `✓ Selected: ${msg.sectionName}`;
+        document.getElementById('status-message-custom').textContent = `✓ Selected: ${msg.sectionName}`;
+        document.getElementById('status-message-import').textContent = `✓ Selected: ${msg.sectionName}`;
+        // Update all status styles
+        document.getElementById('status').classList.add('selected');
+        document.getElementById('status-custom').classList.add('selected');
+        document.getElementById('status-import').classList.add('selected');
+        updatePlacementOptions();
+        updateAddButton();
+      } else if (msg.type === 'no-selection') {
+        selectedSection = null;
+        isSelectedSection = false;
+        // Update all status messages
+        document.getElementById('status-message').textContent = 'Select a single section or sticky to add cards';
+        document.getElementById('status-message-custom').textContent = 'Select a single section or sticky to add cards';
+        document.getElementById('status-message-import').textContent = 'Select a single section or sticky to add cards';
+        // Update all status styles
+        document.getElementById('status').classList.remove('selected');
+        document.getElementById('status-custom').classList.remove('selected');
+        document.getElementById('status-import').classList.remove('selected');
+        updatePlacementOptions();
+        updateAddButton();
+      }
+    };
+
+    // Built-in templates
+    const builtInTemplates = {
+      feature: {
+        name: 'Feature Card',
+        cards: [{
+          title: 'Feature Name',
+          content: `Feature Name
+
+Objective: Describe what this feature aims to achieve
+
+Dependency:
+List any dependencies
+Another dependency if needed
+
+Lift (Days) = 
+
+Start Date = 
+End Date = `
+        }]
+      },
+      bug: {
+        name: 'Bug Report',
+        cards: [{
+          title: 'Bug Title',
+          content: `Bug Title
+
+Issue Description: Describe the bug here
+
+Steps to Reproduce:
+1. First step
+2. Second step
+3. Third step
+
+Expected Behavior: What should happen
+
+Actual Behavior: What actually happens
+
+Priority: High/Medium/Low
+
+Status: Open`
+        }]
+      }
+    };
+
+    // Update placement options based on selection type
+    function updatePlacementOptions() {
+      const placementSections = document.querySelectorAll('.placement-options');
+
+      placementSections.forEach(section => {
+        const insideOptions = section.querySelectorAll('input[value="inside"], input[value="inside"] + span');
+        const belowOptions = section.querySelectorAll('input[value="below"]');
+
+        if (isSelectedSection) {
+          // Enable both options for sections
+          insideOptions.forEach(option => {
+            if (option.tagName === 'INPUT') {
+              option.disabled = false;
+            } else {
+              option.style.opacity = '1';
+              option.style.color = '';
+            }
+          });
+        } else {
+          // Disable "inside" option for non-sections
+          insideOptions.forEach(option => {
+            if (option.tagName === 'INPUT') {
+              option.disabled = true;
+              // Auto-select "below" if "inside" was selected
+              if (option.checked) {
+                const belowInput = section.querySelector('input[value="below"]');
+                if (belowInput) belowInput.checked = true;
+              }
+            } else {
+              option.style.opacity = '0.5';
+              option.style.color = '#999';
+            }
+          });
+        }
+      });
+    }
+
+    // Switch tabs
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      const tabIndex = tab === 'templates' ? 1 : tab === 'custom' ? 2 : 3;
+      document.querySelector(`.tab:nth-child(${tabIndex})`).classList.add('active');
+      document.getElementById(`${tab}-tab`).classList.add('active');
+
+      updateAddButton();
+
+      // Resize plugin based on content
+      setTimeout(() => {
+        resizePlugin();
+      }, 10); // Small delay to ensure content is rendered
+    }
+
+    // Resize plugin to fit content
+    function resizePlugin() {
+      // Get the active tab content
+      const activeTab = document.querySelector('.tab-content.active');
+      if (!activeTab) return;
+
+      // Calculate the height needed for visible content
+      const tabs = document.querySelector('.tabs');
+      const tabsHeight = tabs ? tabs.offsetHeight : 0;
+      const activeTabHeight = activeTab.offsetHeight;
+      const padding = 25; // Buffer for margins and spacing
+
+      const contentHeight = tabsHeight + activeTabHeight + padding;
+      const newHeight = contentHeight;
+
+      parent.postMessage({
+        pluginMessage: {
+          type: 'resize',
+          height: newHeight
+        }
+      }, '*');
+    }
+
+    // Parse YAML-like format
+    function parseYAML(text) {
+      const cards = [];
+      const sections = text.trim().split(/\n---\n/);
+
+      sections.forEach(section => {
+        const lines = section.trim().split('\n');
+        if (lines.length === 0) return;
+
+        let card = {};
+        let currentField = null;
+        let content = [];
+
+        lines.forEach(line => {
+          if (line.match(/^(title|objective|dependencies|requirements|lift|start_date|end_date):/i)) {
+            // Save previous field content
+            if (currentField && content.length > 0) {
+              if (currentField === 'dependencies' || currentField === 'requirements') {
+                // For dependencies/requirements, join the array items
+                card[currentField] = content;
+              } else {
+                card[currentField] = content.join('\n').trim();
+              }
+            }
+
+            // Parse new field
+            const [field, ...valueParts] = line.split(':');
+            currentField = field.toLowerCase().trim();
+            const value = valueParts.join(':').trim();
+
+            if (value) {
+              card[currentField] = value;
+              currentField = null;
+              content = [];
+            } else {
+              content = [];
+            }
+          } else if (currentField) {
+            // For multi-line fields like dependencies
+            if (line.trim().startsWith('-')) {
+              // It's a list item
+              content.push(line.trim().substring(1).trim());
+            } else if (line.trim()) {
+              content.push(line.trim());
+            }
+          } else if (line.trim()) {
+            // If no field is active, treat as content continuation
+            if (!card.content) card.content = '';
+            card.content += line + '\n';
+          }
+        });
+
+        // Save last field
+        if (currentField && content.length > 0) {
+          if (currentField === 'dependencies' || currentField === 'requirements') {
+            card[currentField] = content;
+          } else {
+            card[currentField] = content.join('\n').trim();
+          }
+        }
+
+        // Convert to card format
+        if (card.title) {
+          let cardContent = card.title + '\n\n';
+
+          if (card.objective) {
+            cardContent += `Objective: ${card.objective}\n\n`;
+          }
+
+          if (card.dependencies) {
+            cardContent += `Dependency:\n`;
+            // Handle dependencies as array or string
+            if (Array.isArray(card.dependencies)) {
+              card.dependencies.forEach(dep => {
+                if (dep.trim()) {
+                  cardContent += `${dep.trim()}\n`;
+                }
+              });
+            } else {
+              // Handle as string for backward compatibility
+              card.dependencies.split('\n').forEach(dep => {
+                if (dep.trim()) {
+                  cardContent += `${dep.trim()}\n`;
+                }
+              });
+            }
+            cardContent += '\n';
+          }
+
+          if (card.requirements) {
+            cardContent += `Requirements:\n`;
+            // Handle requirements as array or string
+            if (Array.isArray(card.requirements)) {
+              card.requirements.forEach(req => {
+                if (req.trim()) {
+                  cardContent += `${req.trim()}\n`;
+                }
+              });
+            } else {
+              // Handle as string for backward compatibility
+              card.requirements.split('\n').forEach(req => {
+                if (req.trim()) {
+                  cardContent += `${req.trim()}\n`;
+                }
+              });
+            }
+            cardContent += '\n';
+          }
+
+          if (card.lift) {
+            cardContent += `Lift (Days) = ${card.lift}\n\n`;
+          }
+
+          if (card.start_date) {
+            cardContent += `Start Date = ${card.start_date}\n`;
+            if (card.end_date) {
+              cardContent += `End Date = ${card.end_date}`;
+            } else {
+              cardContent += `End Date = `;
+            }
+          }
+
+          cards.push({
+            title: card.title,
+            content: cardContent.trim()
+          });
+        }
+      });
+
+      return cards;
+    }
+
+    // Auto-parse import text as user types
+    function autoParseImport() {
+      const text = document.getElementById('import-text').value.trim();
+      if (!text) {
+        importedCards = [];
+        updateAddButton();
+        return;
+      }
+
+      try {
+        // Try JSON first
+        if (text.startsWith('[') || text.startsWith('{')) {
+          const parsed = JSON.parse(text);
+          importedCards = Array.isArray(parsed) ? parsed : [parsed];
+        } else {
+          // Try YAML-like format
+          importedCards = parseYAML(text);
+        }
+
+        if (importedCards.length === 0) {
+          throw new Error('No valid cards found');
+        }
+
+        // Just update the button
+        updateAddButton();
+
+      } catch (error) {
+        // Clear imported cards on error
+        importedCards = [];
+        updateAddButton();
+      }
+    }
+
+    function updateImportedPreview() {
+      const preview = document.getElementById('imported-preview');
+      if (importedCards.length === 0) {
+        preview.innerHTML = '';
+        return;
+      }
+
+      preview.innerHTML = `
+        <h4 style="margin-top: 16px; margin-bottom: 8px;">Imported Cards (${importedCards.length})</h4>
+        ${importedCards.map(card => `
+          <div class="imported-card">
+            <div class="imported-card-title">${card.title}</div>
+            <div class="imported-card-preview">${card.content.split('\n')[2] || ''}</div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    // Form input handlers
+    ['card-title', 'card-objective', 'card-lift', 'card-start', 'card-deps', 'card-requirements'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
+
+    function updatePreview() {
+      // Remove preview functionality for Add Cards tab
+    }
+
+    function addCustomCard() {
+      const title = document.getElementById('card-title').value.trim();
+      const objective = document.getElementById('card-objective').value.trim();
+
+      if (!title || !objective) {
+        alert('Please fill in at least the title and objective');
+        return;
+      }
+
+      if (!selectedSection) {
+        alert('Please select a section first');
+        return;
+      }
+
+      const lift = document.getElementById('card-lift').value;
+      const start = document.getElementById('card-start').value;
+      const deps = document.getElementById('card-deps').value;
+      const requirements = document.getElementById('card-requirements').value;
+      const placement = document.querySelector('input[name="custom-placement"]:checked').value;
+
+      let content = `${title}\n\n`;
+      content += `Objective: ${objective}\n\n`;
+
+      if (deps) {
+        content += `Dependency:\n`;
+        deps.split('\n').filter(d => d.trim()).forEach(d => {
+          content += `${d.trim()}\n`;
+        });
+        content += '\n';
+      }
+
+      if (requirements) {
+        content += `Requirements:\n`;
+        requirements.split('\n').filter(r => r.trim()).forEach(r => {
+          content += `${r.trim()}\n`;
+        });
+        content += '\n';
+      }
+
+      if (lift) content += `Lift (Days) = ${lift}\n\n`;
+      if (start) content += `Start Date = ${start}\nEnd Date = `;
+
+      // Immediately send the card to be created
+      parent.postMessage({
+        pluginMessage: {
+          type: 'add-cards',
+          placement: placement,
+          cards: [{ title, content }]
+        }
+      }, '*');
+
+      // Clear form after sending
+      ['card-title', 'card-objective', 'card-lift', 'card-start', 'card-deps', 'card-requirements'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+
+    // Remove card list functionality since we don't queue cards anymore
+
+    function updateAddButton() {
+      const importBtn = document.getElementById('add-import-cards');
+      const templateBtn = document.getElementById('add-template-card');
+      const customBtn = document.getElementById('add-custom-card');
+
+      if (!selectedSection) {
+        if (importBtn) importBtn.disabled = true;
+        if (templateBtn) templateBtn.disabled = true;
+        if (customBtn) customBtn.disabled = true;
+      } else if (currentTab === 'import') {
+        if (importBtn) importBtn.disabled = importedCards.length === 0;
+      } else if (currentTab === 'templates') {
+        if (templateBtn) templateBtn.disabled = !selectedTemplate;
+      } else if (currentTab === 'custom') {
+        // Enable custom button when section is selected
+        if (customBtn) customBtn.disabled = false;
+      }
+    }
+
+    // Template selection handlers
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('.template-item')) {
+        const item = e.target.closest('.template-item');
+        if (!e.target.closest('.delete-btn')) {
+          document.querySelectorAll('.template-item').forEach(t => t.classList.remove('selected'));
+          item.classList.add('selected');
+          selectedTemplate = item.dataset.template;
+          updateAddButton();
+        }
+      }
+    });
+
+    // Template management
+    function saveCurrentAsTemplate() {
+      let cards = [];
+      if (customCards.length > 0) {
+        cards = customCards;
+      } else if (importedCards.length > 0) {
+        cards = importedCards;
+      } else {
+        alert('No cards to save as template. Create or import cards first.');
+        return;
+      }
+
+      const name = prompt('Template name:');
+      if (!name) return;
+
+      savedTemplates[name] = {
+        name: name,
+        cards: [...cards],
+        created: new Date().toISOString()
+      };
+
+      // localStorage disabled in Figma plugins
+      updateTemplateList();
+      alert(`Template "${name}" saved!`);
+    }
+
+    function deleteTemplate(name) {
+      if (confirm(`Delete template "${name}"?`)) {
+        delete savedTemplates[name];
+        // localStorage disabled in Figma plugins
+        if (selectedTemplate === name) {
+          selectedTemplate = 'feature';
+        }
+        updateTemplateList();
+        updateAddButton();
+      }
+    }
+
+    function updateTemplateList() {
+      const list = document.getElementById('template-list');
+
+      // Built-in templates HTML (remove redundant 'Built-in template' text)
+      let html = Object.keys(builtInTemplates).map(key => `
+        <div class="template-item ${selectedTemplate === key ? 'selected' : ''}" data-template="${key}">
+          <div class="template-title">${builtInTemplates[key].name}</div>
+          <div class="template-description">${getTemplateDescription(key)}</div>
+        </div>
+      `).join('');
+
+      function getTemplateDescription(key) {
+        const descriptions = {
+          'feature': 'Standard feature template',
+          'bug': 'Track bugs and issues'
+        };
+        return descriptions[key] || 'Template';
+      }
+
+      // Saved templates
+      const savedKeys = Object.keys(savedTemplates);
+      if (savedKeys.length > 0) {
+        html += '<hr style="margin: 16px 0; border: none; border-top: 1px solid #e0e0e0;">';
+        html += '<div style="font-size: 12px; color: #666; margin-bottom: 8px;">Saved Templates</div>';
+        html += savedKeys.map(name => `
+          <div class="template-item ${selectedTemplate === name ? 'selected' : ''}" data-template="${name}">
+            <div class="template-title">${name}</div>
+            <div class="template-description">${savedTemplates[name].cards.length} cards</div>
+            <button class="delete-btn" onclick="event.stopPropagation(); deleteTemplate('${name}')">Delete</button>
+          </div>
+        `).join('');
+      }
+
+      list.innerHTML = html;
+    }
+
+
+    const globalAddBtn = document.getElementById('add-cards');
+    if (globalAddBtn) {
+      globalAddBtn.onclick = () => {
+        const placement = document.querySelector('input[name="placement"]:checked').value;
+        let cards = [];
+
+        if (currentTab === 'import') {
+          cards = importedCards;
+        } else if (currentTab === 'templates') {
+          // Check built-in templates first
+          if (builtInTemplates[selectedTemplate]) {
+            cards = builtInTemplates[selectedTemplate].cards;
+          } else if (savedTemplates[selectedTemplate]) {
+            cards = savedTemplates[selectedTemplate].cards;
+          }
+        } else {
+          cards = customCards;
+        }
+
+
+        if (cards.length === 0) {
+          alert('No cards to add. Please create or import cards first.');
+          return;
+        }
+
+        // Send message to add cards
+        parent.postMessage({
+          pluginMessage: {
+            type: 'add-cards',
+            placement: placement,
+            cards: cards
+          }
+        }, '*');
+      };
+
+      // Set up button handlers with existence checks
+      const importBtn = document.getElementById('add-import-cards');
+      if (importBtn) {
+        importBtn.onclick = () => {
+          const placement = document.querySelector('input[name="placement"]:checked').value;
+          let cards = importedCards;
+
+          if (cards.length === 0) {
+            alert('No cards to add. Please import cards first.');
+            return;
+          }
+
+          // Send message to add cards
+          parent.postMessage({
+            pluginMessage: {
+              type: 'add-cards',
+              placement: placement,
+              cards: cards
+            }
+          }, '*');
+        };
+      }
+
+      const cancelImportBtn = document.getElementById('cancel-import');
+      if (cancelImportBtn) {
+        cancelImportBtn.onclick = () => {
+          parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+        };
+      }
+
+      const templateBtn = document.getElementById('add-template-card');
+      if (templateBtn) {
+        templateBtn.onclick = () => {
+          const placement = document.querySelector('input[name="template-placement"]:checked').value;
+          let cards = [];
+
+          // Check built-in templates first
+          if (builtInTemplates[selectedTemplate]) {
+            cards = builtInTemplates[selectedTemplate].cards;
+          } else if (savedTemplates[selectedTemplate]) {
+            cards = savedTemplates[selectedTemplate].cards;
+          }
+
+          if (cards.length === 0) {
+            alert('No template selected');
+            return;
+          }
+
+          // Send message to add cards
+          parent.postMessage({
+            pluginMessage: {
+              type: 'add-cards',
+              placement: placement,
+              cards: cards
+            }
+          }, '*');
+        };
+      }
+
+      const cancelTemplateBtn = document.getElementById('cancel-template');
+      if (cancelTemplateBtn) {
+        cancelTemplateBtn.onclick = () => {
+          parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+        };
+      }
+
+      const cancelCustomBtn = document.getElementById('cancel-custom');
+      if (cancelCustomBtn) {
+        cancelCustomBtn.onclick = () => {
+          parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+        };
+      }
+
+      // Initialize
+      updateTemplateList();
+
+      // Add event listener for auto-parsing import text
+      document.getElementById('import-text').addEventListener('input', autoParseImport);
+
+      // Wait a bit for UI to fully render, then resize once
+      setTimeout(() => {
+        resizePlugin();
+      }, 200);
+
+      // Check selection on load
+      setTimeout(() => {
+        parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
+      }, 100);
+
+      // Check selection periodically
+      setInterval(() => {
+        parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
+      }, 500);
+    };
+  </script>
+</body>
+
+</html>
