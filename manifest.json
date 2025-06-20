@@ -8,6 +8,5 @@
 	"editorType": [
 		"figjam"
 	],
-	"ui": "ui.html",
-	"documentationUrl": "https://github.com/GoPrelude/figjam-planning-card-creator"
+	"ui": "ui.html"
 }
