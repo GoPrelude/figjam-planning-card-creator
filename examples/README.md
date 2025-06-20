@@ -4,7 +4,12 @@ This folder contains example templates for importing cards into FigJam Planning 
 
 ## Available Templates
 
-### YAML Format ([cards.yaml](cards.yaml))
+**Quick Downloads:**
+
+- [Download YAML Template](template.yaml) - Blank template ready to fill
+- [Download JSON Template](template.json) - Blank template ready to fill
+
+### YAML Format ([example.yaml](example.yaml))
 
 Multiple cards are separated by `---` on its own line.
 
@@ -27,7 +32,7 @@ title: Minimal Card Example
 objective: Only title and objective are required
 ```
 
-### JSON Format ([cards.json](cards.json))
+### JSON Format ([example.json](example.json))
 
 ```json
 [

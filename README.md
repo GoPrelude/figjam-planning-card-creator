@@ -18,9 +18,13 @@ A flexible Figma plugin by **[Prelude](https://goprelude.com)** for adding struc
 
 The plugin supports importing cards in both YAML and JSON formats:
 
-- **YAML Format**: [examples/cards.yaml](examples/cards.yaml)
-- **JSON Format**: [examples/cards.json](examples/cards.json)
+- **YAML Format**: [examples/example.yaml](examples/example.yaml)
+- **JSON Format**: [examples/example.json](examples/example.json)
 - **Import Guide**: [examples/README.md](examples/README.md) - Templates and instructions
+
+**Download Templates:**
+- [YAML Template](examples/template.yaml) - Blank template to get started
+- [JSON Template](examples/template.json) - Blank template to get started
 
 ## How to Install
 
